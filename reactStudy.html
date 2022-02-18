@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/prop-types@15.6/prop-types.js"></script>
+    <!-- 生产环境中不建议使用 -->
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
+    <style>
+        .content{
+            background-color: aquamarine;
+        }
+        #hello{
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="text/babel">
+        const spanId = 'hello'
+        const vdom = <span>hello world</span>
+        ReactDOM.render(
+            <h1 className="content">
+                <span id={spanId}>hello react,</span>
+                <span style={{color: 'red'}}>hello javascript,</span>
+                {vdom}
+            </h1>,
+            document.getElementById('app')
+        )
+        /* jsx:
+        1.定义虚拟dom时不用加引号
+        2.标签内引用js定义的表达式要加花括号{}
+        3.内部样式表要使用className
+        4.行内样式要使用style={{key: value}}
+        5.只有一个根标签，标签须闭合
+        6.标签小写字母开头转为html同名元素，html无同名元素则报错
+        7.标签大写字母开头react区渲染对应组件，若组件未定义则报错
+        */
+    </script>
+    <div id="app2"></div>
+    <script type="text/babel">
+        const arr = ['angular', 'react', 'vue']
+        const vdom = <div>
+            <span>数组循环输出</span>
+            <ul>
+            {
+                arr.map((item, index) => {
+                    return <li key={index}>{item}</li>
+                })
+            }
+            </ul>
+        </div>
+        ReactDOM.render(vdom, document.getElementById('app2'))
+        /*标签{}内使用js语句会报错，使用表达式不会
+        1.表达式：a，a+b，demo（1），arr.map（），function xx（）{}
+        2.js语句：if（）{}，for（）{}，switch（）{case：}
+        */
+    </script>
+    <div id="app3"></div>
+    <script type="text/babel">
+        function Component() {
+            console.log('component', this)
+            // 因为babel编译开启严格模式，this值为undefined
+            return <h1>函数组件</h1>
+        }
+        ReactDOM.render(<Component/>, document.getElementById('app3'))
+        /*函数组件首字母需要大写，且标签包裹闭合*/
+    </script>
+    <div id="app4"></div>
+    <script type="text/babel">
+        class Person extends React.Component{
+            render(){
+                console.log('person', this)
+                // this是实例对象
+                return (
+                    <h1>类组件</h1>
+                )
+            }
+        }
+        ReactDOM.render(<Person/>, document.getElementById('app4'))
+        /*react解析后会new一个类的实例，并通过实例调用原型上的render（）*/
+    </script>
+    <div id="app5"></div>
+    <script type="text/babel">
+        class Person2 extends React.Component{
+            constructor(props){
+                super(props)
+                this.state = {isHot: false}
+                // 从原型上找到click2，改变this指向,然后赋值给前面
+                this.click2 = this.click2.bind(this)
+                this.test = this.click2.bind(this)
+            }
+            render() {
+                console.log('person2', this)
+                return <div>
+                    <span>今天天气很{this.state.isHot ? '凉快' : '热'}，复杂state写法</span>|
+                    <button onClick={this.click}>isHot</button>
+                    <button onClick={this.click2}>isHot2</button>
+                    <button onClick={this.test}>isHot3</button>
+                </div>
+            }
+            click() {
+                // click在原型对象上供实例调用
+                // 通过onClick直接调用，不是通过实例调用，this为undefined
+                // 类中的方法默认开启严格模式
+                console.log(this)
+            }
+            click2() {
+                console.log(this)
+                //this.state.isHot = !this.state.isHot // 状态不可直接更改，无效
+                // 需要从原型的父原型上找到setState
+                const isHot = this.state.isHot
+                this.setState({isHot: !isHot})
+            }
+        }
+        ReactDOM.render(<Person2/>, document.getElementById('app5'))
+    </script>
+    <div id="app6"></div>
+    <script type="text/babel">
+        class New extends React.Component{
+            /*constructor(props) {
+                super(props)
+            }*/
+            state = {isHot: true}
+            render(){
+                return <div>
+                    <span>今天很{this.state.isHot ? '快乐' : '郁闷'},精简的state写法</span>|
+                    <button onClick={this.change}>isHappy</button>
+                    <button onClick={this.change2}>isHappy2</button>
+                </div>
+            }
+            change = function () {
+                // 与change（）{}一致，this值为undefined
+                console.log(this)
+            }
+            change2 = () => {
+                // 赋值语句+箭头函数
+                // 箭头函数本身没有this，会向外找
+                console.log(this)
+                const isHot = this.state.isHot
+                this.setState({isHot: !isHot})
+            }
+        }
+        ReactDOM.render(<New/>, document.getElementById('app6'))
+    </script>
+    <div id="app7"></div>
+    <script type="text/babel">
+        class MyComponent extends React.Component{
+            // props是只读的直接赋值会报错
+            render() {
+                console.log('my-component', this)
+                return <ul>
+                    <li>类组件props复杂写法</li>
+                    <li>{this.props.name}</li>
+                    {/*不限制类型会是字符串拼接*/}
+                    <li>{this.props.age+1}</li>
+                    <li>{this.props.sex}</li>
+                </ul>
+            }
+        }
+        MyComponent.propTypes = {
+            name: PropTypes.string.isRequired, // 限制为字符串，且必传
+            age: PropTypes.number
+            // 如果有函数类型限制，直接function会报错，需要传func，function是关键字
+        }
+        MyComponent.defaultProps = { // 默认的props
+            sex: '男'
+        }
+        ReactDOM.render(<MyComponent name="zs" age={18}/>, document.getElementById('app7'))
+    </script>
+    <div id="app8"></div>
+    <script type="text/babel">
+        class MyComponent2 extends React.Component{
+            static propTypes = {
+                name: PropTypes.string.isRequired,
+                age: PropTypes.number
+            }
+            static defaultProps = {
+                sex: '男'
+            }
+            render() {
+                console.log('my-component2', this)
+                return <ul>
+                    <li>类组件props简写方法</li>
+                    <li>{this.props.name}</li>
+                    <li>{this.props.age+1}</li>
+                    <li>{this.props.sex}</li>
+                </ul>
+            }
+        }
+        ReactDOM.render(<MyComponent2 name="zs" age={18}/>, document.getElementById('app8'))
+    </script>
+    <div id="app9"></div>
+    <script type="text/babel">
+        function FucComponent(props) {
+            return <ul>
+                <li>函数组件调用props</li>
+                <li>{props.name}</li>
+                <li>{props.age}</li>
+                <li>{props.sex}</li>
+            </ul>
+        }
+        // 在不使用hooks的情况下，函数组件只能使用props，不能使用refs和state
+        FucComponent.propTypes = {
+            name: PropTypes.string.isRequired,
+            age: PropTypes.number
+        }
+        FucComponent.defaultProps = { // 默认的props
+            sex: '男'
+        }
+        ReactDOM.render(<FucComponent name="ls" age={20}/>, document.getElementById('app9'))
+    </script>
+    <div id="app10"></div>
+    <script type="text/babel">
+        class RefsComponent extends React.Component{
+            render() {
+                return <div>
+                    <p>用ref为节点打上标识，refs获取节点-字符串形式ref[ref=”xx“]，<span style={{color: 'red'}}>未来版本可能移除</span></p>
+                    <input id="input1" ref='input1' type="text" placeholder="点击按钮提示数据"/>&nbsp;
+                    <button onClick={this.message}>click</button>&nbsp;
+                    <input ref='input2' onBlur={this.blurInput} type="text" placeholder="失去焦点提示数据"/>
+                </div>
+            }
+            message = ()=>{
+                /*const input = document.querySelector('#input1')
+                console.log(input.value)*/
+                console.log('refs', this)
+                alert(this.refs.input1.value)
+            }
+            blurInput = ()=>{
+                alert(this.refs.input2.value)
+            }
+        }
+        ReactDOM.render(<RefsComponent/>, document.querySelector('#app10'))
+    </script>
+    <div id="app11"></div>
+    <script type="text/babel">
+        class RefsComponent2 extends React.Component{
+            state = {isHot: true}
+            render() {
+                return <div>
+                    <p>回调函数形式ref</p>
+                    <input ref={(currentNode) => {this.input1 = currentNode;console.log('refs2:currentNode',currentNode)}} type="text" placeholder="点击按钮提示数据"/>&nbsp;
+                    <button onClick={this.message}>click</button>&nbsp;
+                    <input ref={currentNode => this.input2 = currentNode} onBlur={this.blurInput} type="text" placeholder="失去焦点提示数据"/>
+                    <p>回调函数ref存在的问题</p>
+                    {/*界面更新的时候fef会执行两次，一次null，一次获取到节点*/}
+                    <span>今天很{this.state.isHot? '热' : '冷'}</span>&nbsp;
+                    <button onClick={this.change}>isHot</button>&nbsp;
+                    {/*解决方式很简单，不写内联函数即可*/}
+                    <input type="text" ref={this.newRef} placeholder="解决方式"/>
+                </div>
+            }
+            message = ()=>{
+                console.log('refs2', this)
+                alert(this.input1.value)
+            }
+            blurInput = ()=>{
+                alert(this.input2.value)
+            }
+            change = ()=>{
+                const isHot = this.state.isHot
+                this.setState({isHot: !isHot})
+            }
+            newRef = (currentNode)=>{
+                console.log("refs2解决办法:currentNode", currentNode);
+            }
+        }
+        ReactDOM.render(<RefsComponent2/>, document.querySelector('#app11'))
+    </script>
+    <div id="app12"></div>
+    <script type="text/babel">
+        class CreateRefComponent extends React.Component{
+            myRef = React.createRef()
+            myRef2 = React.createRef()
+            /*React.createRef()被调用后返回一个容器，该容器可以存储被ref标记的节点，容器只能一个标签使用*/
+            render() {
+                return <div>
+                    <p>createRef API的ref</p>
+                    <input type="text" ref={this.myRef} placeholder="点击按钮提示数据"/>&nbsp;
+                    <button onClick={this.change}>click</button>&nbsp;
+                    <input ref={this.myRef2} onBlur={this.blurInput} type="text" placeholder="失去焦点提示数据"/>
+                </div>
+            }
+            change = () =>{
+                console.log(this.myRef, this.myRef.current)
+                alert(this.myRef.current.value)
+            }
+            blurInput = () => {
+                alert(this.myRef2.current.value)
+            }
+        }
+        ReactDOM.render(<CreateRefComponent/>, document.querySelector('#app12'))
+    </script>
+    <div id="app13"></div>
+    <script type="text/babel">
+        /*
+        * react中的onXxx事件都是封装过的，不是原生DOM事件，为了更好的兼容性
+        * react中的事件是通过事件委托方式处理的（委托给组件最外层的元素），为了高效
+        * 通过event.target得到发生事件的DOM元素对象，不要过度使用ref*/
+        class Test extends React.Component{
+            render() {
+                return <div>
+                    <p>react事件处理</p>
+                    {/*<input type="text" ref={this.myRef} placeholder="点击按钮提示数据"/>&nbsp;
+                     <button onClick={this.change}>click</button>&nbsp;*/}
+                    <input onBlur={this.blurInput} type="text" placeholder="失去焦点提示数据"/>
+                </div>
+            }
+            blurInput = (e) => {
+                alert(e.target.value)
+            }
+        }
+        ReactDOM.render(<Test/>, document.querySelector('#app13'))
+    </script>
+    <div id="app14"></div>
+    <script type="text/babel">
+
+        class Test2 extends React.Component{
+            state  ={
+                username: '',
+                password: ''
+            }
+            render() {
+                return <div>
+                    <p>react非受控组件</p>
+                    <form action="" onSubmit={this.submit}>
+                        用户名：<input ref={c => this.username=c} type="text" name="username"/><br/>
+                        密码：<input ref={c => this.password=c} type="password" name="password"/>&nbsp;
+                        {/*<button>submit</button>*/}
+                        <input type="submit" value="click"/>
+                    </form>
+                    <span>react受控组件</span>
+                    <form action="" onSubmit={this.submit2}>
+                        用户名：<input onChange={this.saveUsername} type="text" name="username"/><br/>
+                        密码：<input onChange={this.savePassword} type="password" name="password"/>&nbsp;
+                        {/*<button>submit</button>*/}
+                        <input type="submit" value="click"/>
+                    </form>
+                    <hr/>
+                    <span>高阶函数实现受控组件</span>
+                    <form action="" onSubmit={this.submit3}>
+                        用户名：<input onChange={this.save('username')} type="text" name="username"/><br/>
+                        密码：<input onChange={this.save('password')} type="password" name="password"/>&nbsp;
+                        {/*<button>submit</button>*/}
+                        <input type="submit" value="click"/>
+                    </form>
+                </div>
+            }
+            submit = (e) => {
+                e.preventDefault() // 阻止提交
+                const {username, password} = this
+                alert(username.value, password.value)
+            }
+            saveUsername = (e) => {
+                this.setState({username: e.target.value})
+            }
+            savePassword = (e) => {
+                this.setState({password: e.target.value})
+            }
+            submit2 = (e) => {
+                e.preventDefault() // 阻止提交
+                alert(this.state.password, this.state.username)
+            }
+            submit3 = (e) => {
+                e.preventDefault() // 阻止提交
+            }
+            save = (data) =>{
+                // 此处e是react通过函数柯里化传递的
+                return (e) => {
+                    console.log(data, e.target.value);
+                    /*
+                    const a = 'name'
+                    const obj = {}
+                    obj[a] = 'tom' // obj['name'] = 'tom'
+                    console.log(obj)
+                    */
+                    this.setState({[data]: e.target.value})
+                }
+            }
+            /*高阶函数：
+            * a函数接收的参数是一个函数 xx.map((item,index)=>{})
+            * a函数调用的返回值依然是一个函数 xx = ()=>{return ()=>{}}
+            函数的柯里化：
+            * 通过函数继续调用函数，实现多次接收参数最后统一处理的函数编码形式
+            * function num(a,b,c){return a+b+c} num(1,2,3) // 6
+            * function num(a){
+                return (b)=>{
+                   return (c)=>{
+                       return a+b+c
+                   }
+                }
+              }
+              num(1)(2)(3) // 6
+            */
+        }
+        ReactDOM.render(<Test2/>, document.querySelector('#app14'))
+    </script>
+</body>
+</html>
