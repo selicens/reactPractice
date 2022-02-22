@@ -341,10 +341,18 @@
                         <input type="submit" value="click"/>
                     </form>
                     <hr/>
-                    <span>高阶函数实现受控组件</span>
+                    <span>函数柯里化实现受控组件</span>
                     <form action="" onSubmit={this.submit3}>
                         用户名：<input onChange={this.save('username')} type="text" name="username"/><br/>
                         密码：<input onChange={this.save('password')} type="password" name="password"/>&nbsp;
+                        {/*<button>submit</button>*/}
+                        <input type="submit" value="click"/>
+                    </form>
+                    <hr/>
+                    <span>不用柯里化实现受控组件</span>
+                    <form action="" onSubmit={this.submit3}>
+                        用户名：<input onChange={(event)=>{this.save2('username',event)}} type="text" name="username"/><br/>
+                        密码：<input onChange={event => this.save2('password',event)} type="password" name="password"/>&nbsp;
                         {/*<button>submit</button>*/}
                         <input type="submit" value="click"/>
                     </form>
@@ -396,8 +404,102 @@
               }
               num(1)(2)(3) // 6
             */
+            save2 = (data,event)=>{
+                this.setState({[data]: event.target.value})
+            }
         }
         ReactDOM.render(<Test2/>, document.querySelector('#app14'))
+    </script>
+    <div id="app15"></div>
+    <script type="text/babel">
+        class Father extends React.Component{
+            state = {name: 'react father component'}
+            render() {
+                return <div>
+                    <p>父组件</p>
+                    <Life name={this.state.name}/>
+                    <button onClick={this.update}>更改name</button>
+                </div>
+            }
+            update = ()=>{
+                const {name} = this.state
+                this.setState({name: 'update'})
+            }
+        }
+        class Life extends React.Component{
+            constructor(props) {
+                console.log('constructor: 初始化状态')
+                super(props);
+                // 初始化状态
+                this.state = {
+                    opacity: 1,
+                    count: 0
+                }
+            }
+            render() {
+                // 初始化渲染、状态更新后
+                console.log('render: 初始化渲染、状态更新后')
+                return <div>
+                    <p style={{opacity: this.state.opacity}}>组件生命周期（旧）</p>
+                    <button onClick={this.death}>去工地搬砖</button>
+                    <p>当前值为{this.state.count}</p>
+                    <button onClick={this.add}>加一</button>
+                    <button onClick={this.update}>update</button>
+                    <p>值：{this.props.name}</p>
+                </div>
+            }
+            componentWillMount() {
+                console.log('componentWillMount: 组件将要挂载')
+            }
+            componentDidMount() {
+                console.log('componentDidMount: 组件挂载完成')
+                // 组件挂载完成
+                this.time = setInterval(()=>{
+                    let {opacity} = this.state
+                    opacity -= 0.1
+                    if (opacity <=0) opacity = 1
+                    this.setState({opacity})
+                }, 200)
+            }
+            componentWillUnmount() {
+                console.log('componentWillUnmount: 组件将要卸载')
+                // 组件将要卸载
+                clearInterval(this.time)
+            }
+            shouldComponentUpdate() {
+                console.log('shouldComponentUpdate: 是否应该被更新')
+                return true
+            }
+            componentWillUpdate() {
+                console.log('componentWillUpdate: 组件将要更新')
+            }
+            componentDidUpdate() {
+                console.log('componentDidUpdate: 组件更新完成')
+            }
+            componentWillReceiveProps(props) {
+                console.log('componentWillReceiveProps: 第二次传递props时触发', props)
+            }
+            death = ()=>{
+                console.log('点击')
+                ReactDOM.unmountComponentAtNode(document.getElementById('app15'))
+            }
+            add = ()=> {
+                const {count} = this.state
+                this.setState({count: count+1})
+            }
+            update = ()=> {
+                this.forceUpdate()
+            }
+            /*
+            * 组件生命周期：初始化阶段由ReactDOM.render()触发-初次渲染
+            * constructor(),componentWillMount(),render(),componentDidMount()
+            * 更新阶段由this.setState()或父组件render触发
+            * shouldComponentUpdate(),componentWillUpdate(),render(),componentDidUpdate()
+            * 卸载组件由ReactDOM.unmountComponentAtNode()触发
+            * componentWillUnmount()
+            */
+        }
+        ReactDOM.render(<Father/>, document.querySelector('#app15'))
     </script>
 </body>
 </html>

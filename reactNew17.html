@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <style>
+        #content{
+            width: 150px;
+            height: 300px;
+            background-color: aquamarine;
+            overflow: auto;
+        }
+        #news{
+            font-size: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="text/babel">
+        class App1 extends React.Component{
+            constructor(props) {
+                super(props)
+                console.log('constructor:初始化')
+                this.state = {count: 0, arrNews: []}
+            }
+            render() {
+                console.log('render:初始化渲染，状态改变后');
+                return <div>
+                    <p>17版本生命周期（新）</p>
+                    <span>值为{this.state.count}</span>
+                    <button onClick={this.add}>加一</button>
+                    <button onClick={this.update}>刷新</button>
+                    <div id="content" ref="news">
+                        {
+                          this.state.arrNews.map((item, index) => {
+                              return <p key={index} id="news">{item}</p>
+                          })
+                        }
+                    </div>
+                </div>
+            }
+            componentDidMount() {
+                console.log("componentDidMount:挂载完成");
+                this.method = setInterval(()=>{
+                    const {arrNews} = this.state
+                    let news = '新闻' + `${arrNews.length + 1}`
+                    this.setState({arrNews: [news, ...arrNews]})
+                }, 1000)
+            }
+            static getDerivedStateFromProps(props, state) {
+                // 若state的值在任何时候都取决于props时可以使用
+                console.log("getDeriveStateProps:派生状态", props, state);
+                return null
+            }
+            getSnapshotBeforeUpdate() {
+                console.log("getSnapshotBeforeUpdate:在更新之前获取快照");
+                const height = this.refs.news.scrollHeight
+                return height
+            }
+            componentWillUnmount() {
+                console.log("componentWillUnmount:将要卸载");
+            }
+            shouldComponentUpdate() {
+                console.log("shouldComponentUpdate:更新阀门");
+                return true
+            }
+            componentDidUpdate(a, b, c) {
+                console.log("componentDidUpdate:更新完成", '之前的props值:', a, '之前的state值:', b, 'getSnapshotBeforeUpdate的return值:', c);
+                this.refs.news.scrollTop += this.refs.news.scrollHeight - c
+            }
+            add = ()=> {
+                const {count} = this.state
+                this.setState({count: count+1})
+            }
+            update = ()=> {
+                this.forceUpdate()
+            }
+        }
+        ReactDOM.render(<App1 count={0}/>, document.querySelector('#app'))
+    </script>
+</body>
+</html>

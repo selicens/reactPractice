@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/selicens/reactPractice/issues"
   },
-  "homepage": "https://github.com/selicens/reactPractice#readme"
+  "homepage": "https://github.com/selicens/reactPractice#readme",
+  "dependencies": {
+    "create-react-app": "^5.0.0"
+  }
 }
