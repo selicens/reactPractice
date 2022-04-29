@@ -17,6 +17,12 @@ import TodoList from "./components/TodoList";
 import Github from "./components/Github";
 import Routers from "./components/Router";
 import CountRedux from "./components/CountRedux";
+import ReactReduxContainer from "./components/ReactRedux";
+// import {Provider} from'react-redux'
+import store from "./redux/store";
+import SimplifyReactRedux from "./components/SimplifyReactRedux";
+import Person from "./components/Person";
+import Extension from "./components/Extension";
 import {Divider} from 'antd'
 
 class App extends React.Component{
@@ -25,14 +31,21 @@ class App extends React.Component{
             <div className="App">
                 <header className="App-header">
                     <Hello name="javascript"/>
-                    <Divider style={{color: 'white'}}/>
+                    <Divider/>
                     <TodoList/>
-                    <Divider style={{color: 'white'}}/>
+                    <Divider/>
                     <Github/>
-                    <Divider style={{color: 'white'}}/>
+                    <Divider/>
                     <Routers/>
-                    <Divider style={{color: 'white'}}/>
+                    <Divider/>
                     <CountRedux/>
+                    <Divider/>
+                    <ReactReduxContainer/>
+                    <Divider/>
+                    <SimplifyReactRedux store={store}/>
+                    <Divider/>
+                    <Person/>
+                    <Extension/>
                 </header>
             </div>
         )
