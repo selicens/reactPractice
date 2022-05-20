@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import SetState from "./SetState";
 import LazyLoad from "./LazyLoad";
 import Hooks from "./Hooks"
+import Fragment from "./Fragment";
 class Extension extends Component {
     render() {
         return (
@@ -9,6 +10,7 @@ class Extension extends Component {
                 <SetState/>
                 <LazyLoad/>
                 <Hooks/>
+                <Fragment/>
             </div>
         );
     }
