@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import SetState from "./SetState";
 import LazyLoad from "./LazyLoad";
 import Hooks from "./Hooks"
-import Fragment from "./Fragment";
+import FragmentComponent from "./Fragment";
+import ContextA from "./Context";
 class Extension extends Component {
     render() {
         return (
@@ -10,7 +11,8 @@ class Extension extends Component {
                 <SetState/>
                 <LazyLoad/>
                 <Hooks/>
-                <Fragment/>
+                <FragmentComponent/>
+                <ContextA/>
             </div>
         );
     }
