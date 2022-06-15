@@ -4,6 +4,9 @@ import LazyLoad from "./LazyLoad";
 import Hooks from "./Hooks"
 import FragmentComponent from "./Fragment";
 import ContextA from "./Context";
+import PureComponents from "./PureComponent";
+import RendProps from "./RendProps";
+import ErrorBoundary from "./ErrorBoundary";
 class Extension extends Component {
     render() {
         return (
@@ -13,6 +16,9 @@ class Extension extends Component {
                 <Hooks/>
                 <FragmentComponent/>
                 <ContextA/>
+                <PureComponents/>
+                <RendProps/>
+                <ErrorBoundary/>
             </div>
         );
     }
