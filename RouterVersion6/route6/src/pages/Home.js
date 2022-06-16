@@ -18,6 +18,12 @@ export default function Home() {
             }
         })
     }
+    function next() {
+        navigate(1)
+    }
+    function back() {
+        navigate(-1)
+    }
     return (
         <div>
             <h3>params传参</h3>
@@ -41,6 +47,8 @@ export default function Home() {
                 <hr/>
                 <span>编程式路由导航</span>
                 <button onClick={()=>{f(target[0])}}>跳转</button>
+                <button onClick={next}>前进</button>
+                <button onClick={back}>后退</button>
             </li>
             <Outlet/>
             {count === 2 ? <Navigate to='/about'/> : <p>当前值为{count}</p>}
